@@ -1,5 +1,6 @@
 import builtins
 import numpy as np
+import math
 
 class KNearestNeighbor(object):
     """ a kNN classifier with Cosine and L2 distances """
@@ -84,7 +85,7 @@ class KNearestNeighbor(object):
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-                pass
+                dists[i][j] = np.sqrt(math.pow(np.sum((X[i] - self.X_train[j])),2))
                 
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -107,8 +108,7 @@ class KNearestNeighbor(object):
             # Do not use np.linalg.norm().                                        #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-            
-            pass
+            dists[i,:] = np.sqrt(np.sum((X[i] - self.X_train)** 2, axis=1))
             
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -137,9 +137,10 @@ class KNearestNeighbor(object):
         #       and two broadcast sums.                                         #
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        
-        pass
-        
+        x = np.squeeze(np.sum(X ** 2, axis=1))
+        x_t = np.squeeze(np.sum(self.X_train ** 2, axis=1))
+        mult = np.squeeze(X @ self.X_train.T)
+        dists = np.sqrt(x - 2 * mult + x_t)
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
@@ -170,8 +171,9 @@ class KNearestNeighbor(object):
                 # scipy.spatial.distance.cosine
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-                
-                pass
+                d_p = np.inner(X[i],self.X_train[j])
+                denum = np.sum(X[i] **2) * np.sum(self.X_train[j] **2)
+                dists[i][j] = d_p / denum
                 
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -194,9 +196,9 @@ class KNearestNeighbor(object):
             # Do not use np.linalg.norm(). and scipy.spatial.distance.cosine      #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-            
-            pass
-            
+            dot = np.dot(X[i],self.X_train)
+            norms = np.sqrt(np.sum(X[i]**2)) * np.sqrt(np.sum(self.X_train**2,axis=1))
+            dists[i,:] =dot / norms
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
     
