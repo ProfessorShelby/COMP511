@@ -196,7 +196,7 @@ class KNearestNeighbor(object):
             # Do not use np.linalg.norm(). and scipy.spatial.distance.cosine      #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-            dot = np.dot(X[i],self.X_train)
+            dot = np.dot(X[i],self.X_train.T)
             norms = np.sqrt(np.sum(X[i]**2)) * np.sqrt(np.sum(self.X_train**2,axis=1))
             dists[i,:] =dot / norms
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -228,7 +228,7 @@ class KNearestNeighbor(object):
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         
-        pass
+        dots = np.inner(X,self.X_train)
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
