@@ -87,7 +87,10 @@ class FourLayerNet(object):
         # shape (N, C).                                                             #
         #############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        
+        l1 = np.maximum(np.dot(X,W1) + b1,0)
+        l2 = np.maximum(np.dot(l1,W2)+ b2,0)
+        l3 = np.maximum(np.dot(l2, W3)+ b3, 0)
+        out = np.dot(l3, W4) + b4
         pass
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
