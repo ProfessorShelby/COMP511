@@ -229,7 +229,8 @@ class KNearestNeighbor(object):
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         
         dots = np.inner(X,self.X_train)
-
+        norms = np.sqrt(np.sum(X **2,axis=1)) * np.sqrt(np.sum(self.X_train ** 2, axis=1))
+        dists = dots/norms
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
