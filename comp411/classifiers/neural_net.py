@@ -91,7 +91,6 @@ class FourLayerNet(object):
         l2 = np.maximum(np.dot(l1,W2)+ b2,0)
         l3 = np.maximum(np.dot(l2, W3)+ b3, 0)
         out = np.dot(l3, W4) + b4
-        pass
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -108,8 +107,11 @@ class FourLayerNet(object):
         # classifier loss.                                                          #
         #############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        
-        pass
+        softmax = np.exp(out)/np.exp(out).sum(axis=1,keepdims=True)
+        softmax_alt = np.exp(out - np.max(out)) / np.exp(out - np.max(out)).sum(axis=1,keepdims=True)
+        loss = (-np.log(softmax[np.arange(N), y])).sum() / N
+        wd = np.sum(W1**2) + np.sum(W2**2) + np.sum(W3**2) + np.sum(W4**2)
+        loss += reg * wd
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
