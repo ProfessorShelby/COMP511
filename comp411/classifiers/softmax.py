@@ -41,8 +41,25 @@ def softmax_loss_naive(W, X, y, reg_l2, reg_l1 = 0):
     ##############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    targets = y.shape[1]
+    bs = X.shape[0]
 
+    for i in range(bs):
+        logits = X[i] @ W
+        ll = (logits - logits.max()).exp()
+        softmax = ll / ll.sum()
+        loss -= np.log(softmax[y[i]])  # nll
+        softmax[y[i]] -= 1  # update for gradient
+        for j in range(targets):
+            dW[:, j] += X[i] * softmax[j]
+        dW[:, y[i]] -= X[i]
+
+    if regtype == 'L2':
+        loss = loss / bs + reg_l2 * (W ** 2).sum()
+        dW = dW / bs + 2 * reg_l2 * W
+    else:
+        loss = loss / bs + reg_l2 * (W ** 2).sum() + reg_l1 * W.abs().sum()
+        dW = dW / bs + 2 * reg_l2 * W + reg_l1 * W.sign()
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
     return loss, dW
@@ -72,7 +89,25 @@ def softmax_loss_vectorized(W, X, y, reg_l2, reg_l1 = 0):
     ##############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    bs = X.shape[0]
+
+    logit = X @ W
+    probs = np.exp(logit) / np.sum(np.exp(logit), axis=1).reshape(-1, 1)
+
+    loss = np.sum(-np.log(probs[range(bs), y]))
+    loss /= bs
+
+    dprobs = probs
+    dprobs[range(bs), y] -= 1
+    dW = X.T @ dprobs
+    #dW /= bs
+
+    if regtype == 'L2':
+        loss += reg_l2 * np.sum(W**2)
+        dW += 2 * reg_l2 * W
+    else:
+        loss += reg_l2 * np.sum(W**2) + reg_l1 * W.abs().sum()
+        dW += 2 * reg_l2 * W + reg_l1 * W.sign()
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
