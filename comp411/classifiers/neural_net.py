@@ -19,7 +19,7 @@ class FourLayerNet(object):
     The outputs of the third fully-connected layer are the scores for each class.
     """
 
-    def __init__(self, input_size, hidden_size, output_size, std=1e-3):
+    def __init__(self, input_size, hidden_size, output_size, std=1e-2):
         """
         Initialize the model. Weights are initialized to small random values and
         biases are initialized to zero. Weights and biases are stored in the
@@ -87,11 +87,10 @@ class FourLayerNet(object):
         # shape (N, C).                                                             #
         #############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        l1 = np.maximum(np.dot(X,W1) + b1,0)
-        l2 = np.maximum(np.dot(l1,W2)+ b2,0)
-        l3 = np.maximum(np.dot(l2, W3)+ b3, 0)
-        out = np.dot(l3, W4) + b4
-
+        l1 = np.maximum(0,np.dot(X,W1) + b1)
+        l2 = np.maximum(0,np.dot(l1,W2) + b2)
+        l3 = np.maximum(0,np.dot(l2, W3)+ b3)
+        scores = np.dot(l3, W4) + b4
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
         # If the targets are not given then jump out, we're done
@@ -108,7 +107,7 @@ class FourLayerNet(object):
         #############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         #softmax = np.exp(out)/np.exp(out).sum(axis=1,keepdims=True)
-        softmax = np.exp(out - np.max(out)) / np.exp(out - np.max(out)).sum(axis=1,keepdims=True)
+        softmax = np.exp(scores - np.max(scores)) / np.exp(scores - np.max(scores)).sum(axis=1,keepdims=True)
         loss = (-np.log(softmax[np.arange(N), y])).sum() / N
         wd = np.sum(W1**2) + np.sum(W2**2) + np.sum(W3**2) + np.sum(W4**2)
         loss += reg * wd
