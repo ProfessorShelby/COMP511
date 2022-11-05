@@ -19,7 +19,7 @@ class FourLayerNet(object):
     The outputs of the third fully-connected layer are the scores for each class.
     """
 
-    def __init__(self, input_size, hidden_size, output_size, std=1e-3):
+    def __init__(self, input_size, hidden_size, output_size, std=1e-2):
         """
         Initialize the model. Weights are initialized to small random values and
         biases are initialized to zero. Weights and biases are stored in the
@@ -87,9 +87,10 @@ class FourLayerNet(object):
         # shape (N, C).                                                             #
         #############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        
-        pass
-
+        l1 = np.maximum(0,np.dot(X,W1) + b1)
+        l2 = np.maximum(0,np.dot(l1,W2) + b2)
+        l3 = np.maximum(0,np.dot(l2, W3)+ b3)
+        scores = np.dot(l3, W4) + b4
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
         # If the targets are not given then jump out, we're done
@@ -105,8 +106,11 @@ class FourLayerNet(object):
         # classifier loss.                                                          #
         #############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        
-        pass
+        #softmax = np.exp(out)/np.exp(out).sum(axis=1,keepdims=True)
+        softmax = np.exp(scores - np.max(scores)) / np.exp(scores - np.max(scores)).sum(axis=1,keepdims=True)
+        loss = (-np.log(softmax[np.arange(N), y])).sum() / N
+        wd = np.sum(W1**2) + np.sum(W2**2) + np.sum(W3**2) + np.sum(W4**2)
+        loss += reg * wd
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -119,7 +123,38 @@ class FourLayerNet(object):
         #############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        dprobs = softmax
+        dprobs[range(N), y] -= 1
+        dprobs /= N
+
+        db4 = np.sum(dprobs, axis=0)
+        dW4 = l3.T @ dprobs
+        dW4 += 2 * reg * W4
+
+        dh3 = dprobs @ W4.T
+        dh3[l3 < 0] = 0
+        db3 = np.sum(dh3, axis=0)
+        dW3 = l2.T @ dh3
+        dW3 += 2 * reg * W3
+
+        dh2 = dh3 @ W3.T
+        dh2[l2 < 0] = 0
+
+        db2 = np.sum(dh2, axis=0)
+        dW2 = l1.T @ dh2
+        dW2 += 2 * reg * W2
+
+        dh1 = dh2 @ W2.T
+        dh1[l1 < 0] = 0
+
+        db1 = np.sum(dh1, axis=0)
+        dW1 = X.T @ dh1
+        dW1 += 2 * reg * W1
+
+        grads = {'W1': dW1, 'b1': db1,
+                 'W2': dW2, 'b2': db2,
+                 'W3': dW3, 'b3': db3,
+                 'W4': dW4, 'b4': db4}
     
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -164,8 +199,9 @@ class FourLayerNet(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
-
+            r = np.random.choice(range(num_train), batch_size)
+            X_batch = X[r,:]
+            y_batch = y[r]
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
             # Compute loss and gradients using the current minibatch
@@ -179,8 +215,8 @@ class FourLayerNet(object):
             # stored in the grads dictionary defined above.                         #
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-            
-            pass
+            for key,val in self.params.items():
+                self.params[key] -= learning_rate * grads[key]
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -226,7 +262,7 @@ class FourLayerNet(object):
         ###########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        y_pred = np.argmax(self.loss(X), axis=1)
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
