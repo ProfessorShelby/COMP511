@@ -5,3 +5,5 @@
 
 # gitignore the built release.
 assignment3/*
+comp411/.DS_Store
+.DS_Store
