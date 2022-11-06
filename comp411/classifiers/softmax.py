@@ -100,7 +100,7 @@ def softmax_loss_vectorized(W, X, y, reg_l2, reg_l1 = 0):
     dprobs = probs
     dprobs[range(bs), y] -= 1
     dW = X.T @ dprobs
-    #dW /= bs
+    dW /= bs
 
     if regtype == 'L2':
         loss += reg_l2 * np.sum(W**2)
