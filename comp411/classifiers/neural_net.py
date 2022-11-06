@@ -106,9 +106,9 @@ class FourLayerNet(object):
         # classifier loss.                                                          #
         #############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        #softmax = np.exp(out)/np.exp(out).sum(axis=1,keepdims=True)
-        softmax = np.exp(scores - np.max(scores)) / np.exp(scores - np.max(scores)).sum(axis=1,keepdims=True)
-        loss = (-np.log(softmax[np.arange(N), y])).sum() / N
+        softmax = np.exp(scores)/np.exp(scores).sum(axis=1,keepdims=True)
+        #softmax = np.exp(scores - np.max(scores)) / np.exp(scores - np.max(scores)).sum(axis=1,keepdims=True)
+        loss = (-np.log(softmax[range(N), y])).sum() / N
         wd = np.sum(W1**2) + np.sum(W2**2) + np.sum(W3**2) + np.sum(W4**2)
         loss += reg * wd
 
@@ -132,21 +132,19 @@ class FourLayerNet(object):
         dW4 += 2 * reg * W4
 
         dh3 = dprobs @ W4.T
-        dh3[l3 < 0] = 0
+        dh3[l3 <= 0] = 0
         db3 = np.sum(dh3, axis=0)
         dW3 = l2.T @ dh3
         dW3 += 2 * reg * W3
 
         dh2 = dh3 @ W3.T
-        dh2[l2 < 0] = 0
-
+        dh2[l2 <= 0] = 0
         db2 = np.sum(dh2, axis=0)
         dW2 = l1.T @ dh2
         dW2 += 2 * reg * W2
 
         dh1 = dh2 @ W2.T
-        dh1[l1 < 0] = 0
-
+        dh1[l1 <= 0] = 0
         db1 = np.sum(dh1, axis=0)
         dW1 = X.T @ dh1
         dW1 += 2 * reg * W1
