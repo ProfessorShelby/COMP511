@@ -169,8 +169,8 @@ class KNearestNeighbor(object):
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
                 d_p = np.inner(X[i],self.X_train[j])
-                denum = np.sum(X[i] **2) * np.sum(self.X_train[j] **2)
-                dists[i][j] = d_p / denum
+                denum = np.sqrt(np.sum(X[i] **2)) * np.sqrt(np.sum(self.X_train[j] **2))
+                dists[i][j] = 1- (d_p / denum)
                 
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -193,9 +193,7 @@ class KNearestNeighbor(object):
             # Do not use np.linalg.norm(). and scipy.spatial.distance.cosine      #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-            #dists[i,:] = 1 - (X[i,:] @ self.X_train.T)/np.sqrt((X[i,:] @ X[i,:].T))/np.sqrt(np.sum((self.X_train)**2,axis=1))
-            dists[i, :] = np.matmul(X[i, :], self.X_train.T) / np.sqrt(np.dot(X[i, :], X[i, :].T)) / np.sqrt(
-                np.sum((self.X_train) ** 2, axis=1))
+            dists[i,:] = 1 - (X[i,:] @ self.X_train.T)/np.sqrt((X[i,:] @ X[i,:].T))/np.sqrt(np.sum((self.X_train)**2,axis=1))
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
     
@@ -225,7 +223,7 @@ class KNearestNeighbor(object):
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         
-        dists = 1-np.dot(X, self.X_train.T)/np.sqrt(np.sum(X**2, axis=1, keepdims=True))/np.sqrt(np.sum(self.X_train**2, axis=1))
+        dists = 1 - (X @ self.X_train.T)/np.sqrt(np.sum(X**2, axis=1, keepdims=True))/np.sqrt(np.sum(self.X_train**2, axis=1))
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
