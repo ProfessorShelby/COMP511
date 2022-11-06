@@ -85,7 +85,7 @@ class KNearestNeighbor(object):
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-                dists[i][j] = np.sqrt(math.pow(np.sum((X[i] - self.X_train[j])),2))
+                dists[i,j] = np.sqrt(np.sum((X[i,:] - self.X_train[j,:])**2))
                 
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -137,10 +137,7 @@ class KNearestNeighbor(object):
         #       and two broadcast sums.                                         #
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        x = np.squeeze(np.sum(X ** 2, axis=1))
-        x_t = np.squeeze(np.sum(self.X_train ** 2, axis=1))
-        mult = np.squeeze(X @ self.X_train.T)
-        dists = np.sqrt(x - 2 * mult + x_t)
+        dists = np.sqrt(np.sum(X**2, axis=1, keepdims=True) + np.sum(self.X_train**2, axis=1) -2 * np.dot(X, self.X_train.T))
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
@@ -196,9 +193,9 @@ class KNearestNeighbor(object):
             # Do not use np.linalg.norm(). and scipy.spatial.distance.cosine      #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-            dot = np.dot(X[i],self.X_train.T)
-            norms = np.sqrt(np.sum(X[i]**2)) * np.sqrt(np.sum(self.X_train**2,axis=1))
-            dists[i,:] =dot / norms
+            #dists[i,:] = 1 - (X[i,:] @ self.X_train.T)/np.sqrt((X[i,:] @ X[i,:].T))/np.sqrt(np.sum((self.X_train)**2,axis=1))
+            dists[i, :] = np.matmul(X[i, :], self.X_train.T) / np.sqrt(np.dot(X[i, :], X[i, :].T)) / np.sqrt(
+                np.sum((self.X_train) ** 2, axis=1))
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
     
@@ -228,9 +225,7 @@ class KNearestNeighbor(object):
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         
-        dots = np.inner(X,self.X_train)
-        norms = np.sqrt(np.sum(X **2,axis=1)) * np.sqrt(np.sum(self.X_train ** 2, axis=1))
-        dists = dots/norms
+        dists = 1-np.dot(X, self.X_train.T)/np.sqrt(np.sum(X**2, axis=1, keepdims=True))/np.sqrt(np.sum(self.X_train**2, axis=1))
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
